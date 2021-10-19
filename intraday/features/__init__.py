@@ -12,7 +12,6 @@ from .delta import Delta
 from .div import Div
 from .div_delta import DivDelta
 from .efficiency_ratio import EfficiencyRatio
-from .ehlers import Ehlers
 from .ema import EMA
 from .eom import EOM
 from .fractal import Fractal
@@ -41,7 +40,7 @@ from .zema import ZEMA
 __all__ = [
     'Feature', 'TradesFeature',
     'AbnormalTrades', 'Abs', 'ADL', 'AverageTrade', 'Change', 'Clip', 'CMF',
-    'Copy', 'CumulativeSum', 'Delta', 'Div', 'DivDelta', 'EfficiencyRatio', 'Ehlers', 'EMA',
+    'Copy', 'CumulativeSum', 'Delta', 'Div', 'DivDelta', 'EfficiencyRatio', 'EMA',
     'EOM', 'Fractal', 'FractalDimension', 'GaussianSmooth', 'HeikenAshi',
     'KAMA', 'Log', 'LogDelta', 'LogReturn', 'MarketDimension', 'Mul', 'OBV',
     'ParabolicSAR', 'PriceDynamics', 'PriceEncoder', 'Return', 'SemiLogReturn',
