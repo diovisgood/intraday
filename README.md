@@ -226,4 +226,4 @@ And then reduce it to some realistic values over time.
 ## TODO
 
 1. Not all `features/*.py` have corresponding unit-tests. Ideally, each feature should have good unit-testing.
-2. dfd
+2. It would be nice to have support for other major exchanges like Coinbase.
