@@ -21,11 +21,12 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     install_requires=[
+        'gym>=0.17.2',
         'numpy>=1.18.1',
         'arrow>=0.13.1',
-        'gym>=0.17.2',
-    ],
+        'feather-format>=0.4.1',
+],
     extras_require={
-        # 'gym': ['gym>=0.17.2'],
+        'pyglet': ['pyglet>=1.5.16'],
     },
 )
