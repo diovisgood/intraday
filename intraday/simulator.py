@@ -5,6 +5,22 @@ from .provider import Trade, Candle, Kline, Provider
 
 
 class Simulator(Provider):
+    """
+    Base class for providers which simulate stream of trades from candles or klines
+    
+    Parameters
+    ----------
+    spread : float
+        Spread is the different between best bid and best ask prices.
+        We don't have order book and we can't estimate spread from the stream of trades.
+        That is why we need some predefined value to compute it.
+        Actual spread is computed as `spread` multiplied by price
+        Default: 0.0005
+
+    See Also
+    --------
+    intraday.providers.BinanceKlines
+    """
     def __init__(self, spread: float = 0.0005, **kwargs):
         super().__init__(**kwargs)
         assert isinstance(spread, float) and (0 <= spread <= 1.0)
@@ -24,6 +40,7 @@ class Simulator(Provider):
 
         In order to simplify, we randomly choose one of two basic variants: zigzag1 or zigzag2
         
+        <pre>
         zigzag1 (open -> high -> low -> close):
              high
              /\
@@ -37,6 +54,7 @@ class Simulator(Provider):
         open \  /  \ close
               \/
               low
+        </pre>
 
         Parameters
         ----------
@@ -87,15 +105,15 @@ class Simulator(Provider):
         This function tries to keep overall volume weighted average price unchanged.
 
         A volume weighted average price (VWAP) is defined for a sequence of trades:
-            VWAP = (price1 * amount1 + price2 * amount2 + ... ) / (amount1 + amount2 + ...)
+        >>> VWAP = (price1 * amount1 + price2 * amount2 + ... ) / (amount1 + amount2 + ...)
 
         Each trade has a buyer and a seller. So called "Buy" trade is a trade initiated by the buyer.
 
         An extra fields of kline allow us to compute separately VWAP of buy trades.
-            VWAP_buy = Buy_Money / Buy_Volume
+        >>> VWAP_buy = Buy_Money / Buy_Volume
 
         And VWAP for sell trades:
-            VWAP_sell = (Money - Buy_Money) / (Volume - Buy_Volume)
+        >>> VWAP_sell = (Money - Buy_Money) / (Volume - Buy_Volume)
 
         Tries to preserve a VWAP of buy trades and VWAP of sell trades.
         Thus making overall VWAP of candle also preserved.

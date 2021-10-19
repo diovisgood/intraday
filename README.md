@@ -224,20 +224,29 @@ And then reduce it to some realistic values over time.
 
 ### Support for any kind of data providers
 
-`BinanceArchiveProvider` - automatically downloads monthly trades archives from [binance.com]
+`BinanceArchiveProvider` - automatically downloads monthly trades archives from (binance.com)[binance.com]
 and converts them into `.feather` file format for faster loading.
-All you need to do is to specify symbol name: 'BTCUSDT' and dates range.
+All you need to do is to specify symbol name, for example: 'BTCUSDT', and dates range.
 
-`BinanceKLines` - automatically downloads monthly candles archives from [binance.com]
+`BinanceKLines` - automatically downloads monthly candles archives from (binance.com)[binance.com]
 and also converts them into `.feather` file format for faster loading.
 KLine is a binance candle with some additional fields.
-If you want to try large time intervals: say 15 minutes or 1 hour - processing trades archives
-turns out to be too slow. In this case you may want to use 1 minute klines.
+If you want to investigate large time intervals: say 30 minutes or 1 hour - processing trades archives
+becomes **too slow**. In this case you may want to use 1 minute klines as your data source.
+Note, that in this case you should not rely on features which analyze trades,
+because trades are *simulated* in case of klines or candles.
 
-`MoexArchiveProvider` - provider which works with raw stream of trades
+`MoexArchiveProvider` - provider which works with raw stream of trades from Moscow Exchange
 saved in a special binary format: `*.trades.gz`.
 In this format each file represents one trading session (one day).
 Just ignore it if you don't access to these archives.
+
+`SineProvider` - Sine wave generator with adjustable noise.
+If you want to train a trading bot, this sine generator
+would be a good test for it.
+If your algorithm fails to learn to make profit even on such simple data,
+it will never find any profit in a real market data.
+
 
 ## TODO
 

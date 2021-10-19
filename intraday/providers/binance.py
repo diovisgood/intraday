@@ -11,6 +11,37 @@ from intraday.provider import Provider, Trade
 
 
 class BinanceArchiveProvider(Provider):
+    """
+    Provides stream of trades from binance monthly archives
+
+    Notes
+    -----
+    Given starting and ending dates this provider
+    checks if there are all necessary archive files in `data_dir`.
+    
+    If not - it automatically downloads monthly trades archives from (binance.com)[binance.com].
+    Then it converts them into `.feather` file format for faster loading.
+    
+    All you need to do is to specify symbol name, for example: 'BTCUSDT'.
+
+    Parameters
+    ----------
+    data_dir : str
+        Specify a path to the directory where monthly archive files are to be stored.
+        If there are no monthly archive files - they will be automatically downloaded.
+        Note: this directory must be writeable.
+    symbol : str
+        Name of the trading pair, for example: 'BTCUSDT', 'ETHUSDT'.
+    date_from : Optional[Union[date, datetime, arrow.Arrow]]
+        Specify starting date to load archives.
+        If None - uses the date a year ago from current date.
+        Default: None
+    date_to: Optional[Union[date, datetime, arrow.Arrow]] = None,
+        Specify ending date to load archives.
+        If None - uses the current date.
+        Default: None
+    """
+    
     def __init__(self,
                  data_dir: str,
                  symbol: str,

@@ -9,6 +9,50 @@ from intraday.provider import Provider, Trade
 
 
 class SineProvider(Provider):
+    """
+    Generates fake stream of trades to move price in a sinusoidal form
+
+    Notes
+    -----
+    If you want to train a trading bot, this sine generator
+    would be a good test for it.
+    
+    If your algorithm fails to learn to make profit even on such simple data,
+    it will never find any profit in a real market data.
+    
+    Also, please keep in mind that with default values (mean=0, amplitude=100)
+    price will take both positive and negative values.
+    It may be useful to test your trading bot and your features for robustness.
+    
+    Parameters
+    ----------
+    mean : float
+        Mean value of a sinusoid. Default: 0.0.
+    amplitude: float
+        Amplitude of a sinusoid. Default: 100.0
+    frequency: Optional[Union[float, Tuple[float, float]]]
+        Frequency of a sinusoid in Hertz, i.e. (1 / seconds).
+        Or a range specified by two values, to take a random frequency at each episode.
+        You must specify either `frequency` or `period`.
+        Default: None
+    period: Optional[Union[timedelta, Tuple[timedelta, timedelta]]]
+        Period of a sinusoid in seconds.
+        Or a range specified by two values, to take a random period at each episode.
+        You must specify either `frequency` or `period`.
+        Default: None
+    SNRdb: float
+        Signal to noise ratio in Db.
+        The less this value - the more noise is added to sinusoid.
+        Default: 15.0
+    date_from: Optional[Union[date, datetime, arrow.Arrow]]
+        Specify starting date for simulated trades.
+        If None - uses the date a year ago from current date.
+        Default: None
+    date_to: Optional[Union[date, datetime, arrow.Arrow]]
+        Specify ending date for simulated trades.
+        If None - uses the current date.
+        Default: None
+    """
     def __init__(self,
                  mean: float = 0.0,
                  amplitude: float = 100.0,
@@ -59,7 +103,6 @@ class SineProvider(Provider):
         assert date_from <= date_to
         
         # Prepare episode variables
-        self._id: Optional[int] = None
         self._freq: Optional[float] = None
         self._datetime: Optional[datetime] = None
         self._last_price: Optional[float] = None
@@ -101,7 +144,6 @@ class SineProvider(Provider):
         r = rng.random() if (rng is not None) else np.random.random()
         self._freq = self.freq1 + r * (self.freq2 - self.freq1)
 
-        self._id = 0
         self._datetime = episode_start_datetime
         self._last_price = 0
         
@@ -123,11 +165,9 @@ class SineProvider(Provider):
             operation=operation,
             amount=amount,
             price=price,
-            id=id,
         )
     
     def close(self):
-        self._id = None
         self._freq = None
         self._datetime = None
         self._last_price = None

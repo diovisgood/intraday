@@ -13,6 +13,54 @@ from intraday.simulator import Simulator
 
 
 class BinanceKlines(Simulator):
+    """
+    Simulates stream of trades from 1 minute klines (candles) from binance monthly archives
+    
+    Notes
+    -----
+    Given starting and ending dates this provider
+    checks if there are all necessary archive files in `data_dir`.
+
+    If not - it automatically downloads monthly klines archives from (binance.com)[binance.com].
+    Then it converts them into `.feather` file format for faster loading.
+
+    Kline is a special binance candle with additional fields:
+    `(time_start, time_end, open, high, low, close, volume, money, buy_volume, buy_money)`
+    
+    Fields volume and money make it possible to compute volume weighted average price (VWAP):
+    >>> vwap = kline.money / kline.volume
+    
+    Also you may compute separately VWAP for buy trades and VWAP for sell trades:
+    >>> vwap_buy = kline.buy_money / kline.buy_volume
+    >>> vwap_sell = (kline.money - kline.buy_money) / (kline.volume - kline.buy_volume)
+    
+    VWAP is a price where most of asset amount was traded.
+    This can be important information (or not).
+    
+    To see how trades are emulated from kline, preserving information about VWAP,
+    look `intraday.Simulator` class.
+
+    Parameters
+    ----------
+    data_dir : str
+        Specify a path to the directory where monthly archive files are to be stored.
+        If there are no monthly archive files - they will be automatically downloaded.
+        Note: this directory must be writeable.
+    symbol : str
+        Name of the trading pair, for example: 'BTCUSDT', 'ETHUSDT'.
+    date_from : Optional[Union[date, datetime, arrow.Arrow]]
+        Specify starting date to load archives.
+        If None - uses the date a year ago from current date.
+        Default: None
+    date_to: Optional[Union[date, datetime, arrow.Arrow]] = None,
+        Specify ending date to load archives.
+        If None - uses the current date.
+        Default: None
+    
+    See Also
+    --------
+    intraday.simulator.Simulator
+    """
     duration = 60
     
     def __init__(self,

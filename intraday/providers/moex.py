@@ -14,6 +14,32 @@ from intraday.provider import Provider, TradeOI
 
 
 class MoexArchiveProvider(Provider):
+    """
+    Provides stream of trades from daily archives of a special binary format captured from Moscow Exchange
+
+    Notes
+    -----
+    Given a filemask, starting and ending dates this provider
+    finds all matching daily archive files, located in `data_dir`.
+
+    Parameters
+    ----------
+    data_dir : str
+        Specify a path to the directory where daily archive files are stored.
+    files : Union[Sequence[str], str, re.Pattern]
+        Specify a file mask or provide a list of filenames.
+        If `files` is str - it specifies filemask in fnmatch style. For example: 'SPBFUT.RI??.*.trades.gz'
+        If `files` is re.Pattern - it specifies a pattern to match all target filenames.
+        Otherwise you should provide a list of filenames, located in `data_dir`.
+    date_from : Optional[Union[date, datetime, arrow.Arrow]]
+        Specify starting date to load archives.
+        If None - uses all available daily archive files.
+        Default: None
+    date_to: Optional[Union[date, datetime, arrow.Arrow]] = None,
+        Specify ending date to load archives.
+        If None - uses all available daily archive files.
+        Default: None
+    """
     Stream_Trade_v1_Fmt = '=cBHIIII'
     Stream_Trade_v1_Size = calcsize(Stream_Trade_v1_Fmt)
     Stream_Trade_v2_Fmt = '=cBHIQII'
