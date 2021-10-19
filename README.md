@@ -73,14 +73,17 @@ It provides you with:
 
 1. Download package
 2. Cd into directory
-3. Execute:
+3. Install package
+
 ```bash
+git clone https://github.com/diovisgood/intraday.git
+cd intraday
 python setup.py install
 ```
 
 ### Quick start
 
-Here is a simple script to run 
+Here is a simple script to run:
 
 ```python
 from datetime import date, timedelta
@@ -221,7 +224,20 @@ And then reduce it to some realistic values over time.
 
 ### Support for any kind of data providers
 
+`BinanceArchiveProvider` - automatically downloads monthly trades archives from [binance.com]
+and converts them into `.feather` file format for faster loading.
+All you need to do is to specify symbol name: 'BTCUSDT' and dates range.
 
+`BinanceKLines` - automatically downloads monthly candles archives from [binance.com]
+and also converts them into `.feather` file format for faster loading.
+KLine is a binance candle with some additional fields.
+If you want to try large time intervals: say 15 minutes or 1 hour - processing trades archives
+turns out to be too slow. In this case you may want to use 1 minute klines.
+
+`MoexArchiveProvider` - provider which works with raw stream of trades
+saved in a special binary format: `*.trades.gz`.
+In this format each file represents one trading session (one day).
+Just ignore it if you don't access to these archives.
 
 ## TODO
 
