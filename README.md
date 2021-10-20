@@ -12,62 +12,19 @@ Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License<
 This package provides gym compatible environment to **simulate intraday trading**
 based on stream of trades, either historical or real-time.
 
+![gif animation of trained agent](doc/render_ethusdt_trained.gif)
+
 This project was inspired by [TensorTrade](https://github.com/tensortrade-org/tensortrade),
 but it was written from scratch, and it is a completely original source code.
 
-The main idea is to go deeper from candles to the actual stream of trades.
+The main idea was to go deeper from candles to the actual stream of trades.
+Because candles lose a lot of information, for example:
 
-It has several advantages:
-
-1. Simulates order *delays*, like in the real life.
-2. Takes into account bid-ask *spread*, when executing market orders.
-3. Some limit orders are not executed even if price *touches* them, like in the real life. (Read below for explanation).
-4. Supports *multiple agents* running the same episode.
-5. Supports *idle penalty* to stimulate agents to perform actions and not just hold the initial balance.
-6. Liquidates agent account when it goes *bankrupt* (like in the real life).
-
-It provides you with:
-
-- Gym compatible environment.
-- Real exchange simulation under the hood.
-- Different methods to split stream of trades into frames:
-  - by time interval (as usual)
-  - by traded volume
-  - by number of trades (a.k.a. ticks)
-- Different actions schemes, including the most popular one: `{Buy, Sell, Close}`.
-- Support for many popular order types (it means you can easily write any desired action scheme):
-  - MarketOrder
-  - LimitOrder
-  - StopOrder
-  - TrailingStopOrder
-  - TakeProfitOrder
-- Support for different reward schemes.
-  The most obvious one is: `BalanceReward`, which can be automatically scaled with computed
-  [**ATR**](https://en.wikipedia.org/wiki/Average_true_range) value.
-  Also there is: `ConstantReward`.
-- Support for many popular features and indicators:
-  - ADL
-  - CMF
-  - Cumulative Sum
-  - Efficiency Ratio
-  - EMA
-  - EOM
-  - Fractals
-  - Fractal Dimensions
-  - Heiken Ashi
-  - KAMA
-  - OBV
-  - Parabolic SAR
-  - etc.
-- Two Binance providers: `BinanceArchiveProvider` and `BinanceKlines`.
-- Trades simulation, if for some reason you only have candles.
-- Enhanced evaluation of agent trading performance:
-  - roi
-  - sharpe ratio
-  - profit factor
-  - sortino ratio
-  - etc.
-
+- How many trades during a period were initiated by buyers or by sellers?
+- At what price did most of trades happen during a period?
+- At what price there were almost no activity?
+- Were there many trades with small amounts or less trades with big amounts?
+- etc.
 
 ## Installation
 
@@ -148,10 +105,66 @@ Each color describes a position agent was at that moment:
 - Red: agent was in short position.
 - Black: agent was not in position.
 
-
 ## Advantages
 
-It tries to simulate trading environment as realistically as possible.
+This project has several advantages over other trading environments:
+
+1. Simulates order *delays*, like in the real life.
+2. Takes into account bid-ask *spread*, when executing market orders.
+3. Some limit orders are not executed even if price *touches* them, like in the real life. (Read below for explanation).
+4. Supports *multiple agents* running the same episode.
+5. Supports *idle penalty* to stimulate agents to perform actions and not just hold the initial balance.
+6. Liquidates agent account when it goes *bankrupt* (like in the real life).
+7. Supports adjustable *commissions* either a constant value or a callback function.
+
+It provides you with:
+
+- Gym compatible environment.
+- Real exchange simulation under the hood.
+- Different methods to split stream of trades into frames:
+  - by time interval (as usual)
+  - by traded volume
+  - by number of trades (a.k.a. ticks)
+- Different actions schemes, including the most popular one: `{Buy, Sell, Close}`.
+- Support for many popular order types (it means you can easily write any desired action scheme):
+  - MarketOrder
+  - LimitOrder
+  - StopOrder
+  - TrailingStopOrder
+  - TakeProfitOrder
+- Support for different reward schemes.
+  The most obvious one is: `BalanceReward`. Also there is: `ConstantReward`.
+- Ability to train agent on different assets simultaneously.
+  But also you can automatically scale money balance with computed
+  [**ATR**](https://en.wikipedia.org/wiki/Average_true_range) value.
+  Thus making it possible to train agent on different assets with different prices simultaneously.
+  Also there is: `ConstantReward`.
+- Support for many popular features and indicators:
+  - ADL
+  - CMF
+  - Cumulative Sum
+  - Efficiency Ratio
+  - EMA
+  - EOM
+  - Fractals
+  - Fractal Dimensions
+  - Heiken Ashi
+  - KAMA
+  - OBV
+  - Parabolic SAR
+  - etc.
+- Two Binance providers: `BinanceArchiveProvider` and `BinanceKlines`.
+- Trades simulation, if for some reason you only have candles.
+- Enhanced evaluation of agent trading performance:
+  - roi
+  - sharpe ratio
+  - profit factor
+  - sortino ratio
+  - etc.
+
+## Details
+
+This project tries to simulate trading environment as realistically as possible.
 A lot of trained models seem to perform good during training, but often fail to show
 any positive result in real trading. Mainly because they ignore following issues.
 
@@ -186,7 +199,7 @@ But this package analyzes the stream of buy and sell trades and estimates the me
 values for the bid-ask spread. It then uses the upper estimation of spread to choose
 the realistic price for `MarketOrder` to be executed.
 
-### Limit orders execution
+### Limit orders realistic execution
 
 Another issue is with limit orders. Sometimes limit orders are not executed even if price *touches* them.
 Simply because they were last in the order book and there were not enough corresponding market buy(sell)
@@ -207,7 +220,7 @@ When trained in complicated stochastic environments agents often tend to **do no
 This is a simple way to save its life or money balance.
 A simple solution to the problem is to introduce some penalty for agent for being idle.
 
-Thus its balance will slightly decrease on each step even if it did not open long or short position.
+Thus, its balance will slightly decrease on each step even if it did not open long or short position.
 This decrease is equal to the price range of the current frame multiplied by `idle_penalty` parameter.
 
 ### Liquidation of agent account when it goes bankrupt
@@ -220,15 +233,32 @@ I suggest a better approach would be to let it make mistakes at the beginning of
 And after some time, as it matures, bring some real constraints.
 
 This could easily be achieved by specifying very large `initial_balance` at the start of training.
-And then reduce it to some realistic values over time.
+And then reduce it to some realistic value over time.
+
+### Adjustable commissions
+
+Many researchers successfully train their models to trade different assets without commission.
+Then, of course, these models fail in the real world.
+Because if there are no commissions in training environments agents may learn to perform a lot of trades.
+Which will lead to a great losses in the real world.
+
+This package allows you to specify either a fixed commission, or a callback function.
+For example:
+
+```python
+def binance_commission(operation: str, amount: float, price: float) -> float:
+    return 0.0004 * abs(amount) * price
+```
+
+Note: operation in a string, one of: `{'B', 'S'}`
 
 ### Support for any kind of data providers
 
-`BinanceArchiveProvider` - automatically downloads monthly trades archives from (binance.com)[binance.com]
+`BinanceArchiveProvider` - automatically downloads monthly trades archives from [binance.com](binance.com)
 and converts them into `.feather` file format for faster loading.
 All you need to do is to specify symbol name, for example: 'BTCUSDT', and dates range.
 
-`BinanceKLines` - automatically downloads monthly candles archives from (binance.com)[binance.com]
+`BinanceKLines` - automatically downloads monthly candles archives from [binance.com](binance.com)
 and also converts them into `.feather` file format for faster loading.
 KLine is a binance candle with some additional fields.
 If you want to investigate large time intervals: say 30 minutes or 1 hour - processing trades archives
