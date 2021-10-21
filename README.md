@@ -135,10 +135,12 @@ It provides you with:
 - Support for different reward schemes.
   The most obvious one is: `BalanceReward`. Also there is: `ConstantReward`.
 - Ability to train agent on different assets simultaneously.
-  But also you can automatically scale money balance with computed
+  In this case the reward agent receives when trading different assets highly depends on their price.
+  For example: `BTCUSD` price can move $4000 per day, while for `ETHUSD` it has range of about $100 per day.
+  Hence the rewards based on balance will differ 10 times!
+  To solve this problem you can automatically divide money balance with computed
   [**ATR**](https://en.wikipedia.org/wiki/Average_true_range) value.
   Thus making it possible to train agent on different assets with different prices simultaneously.
-  Also there is: `ConstantReward`.
 - Support for many popular features and indicators:
   - ADL
   - CMF
