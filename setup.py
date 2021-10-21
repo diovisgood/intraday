@@ -5,7 +5,7 @@ with open('README.md', 'r') as file:
 
 setuptools.setup(
     name='intraday',
-    version='0.0.234',
+    version='0.0.235',
     author='Pavel B. Chernov',
     author_email='pavel.b.chernov@gmail.com',
     description='Exchange/Broker Simulation Environment for Intraday Trading Models',

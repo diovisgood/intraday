@@ -267,6 +267,7 @@ class BinanceKlines(Simulator):
         else:
             # Seek to the trade right before the episode start datetime
             record_index = self._df.time_start.searchsorted(episode_start_datetime, side='left')
+            record_index = min(record_index, len(self._df) - 1)
             
         # Get actual episode start datetime as it may be later than demanded datetime
         self._episode_start_datetime = self._df.time_start.iloc[record_index].to_pydatetime()

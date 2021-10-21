@@ -241,7 +241,8 @@ class BinanceArchiveProvider(Provider):
         else:
             # Seek to the trade right after the episode start datetime
             trade_index = self._df.datetime.searchsorted(episode_start_datetime, side='right')
-            
+            trade_index = min(trade_index, len(self._df) - 1)
+
         # Get actual episode start datetime as it may be later than demanded datetime
         self._episode_start_datetime = self._df.datetime.iloc[trade_index].to_pydatetime()
         self._trade_index = trade_index
