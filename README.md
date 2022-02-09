@@ -21,7 +21,7 @@ The main idea was to go deeper from candles to the actual stream of trades.
 Because candles lose a lot of information, for example:
 
 - How many trades during a period were initiated by buyers or by sellers?
-- At what price did most of trades happen during a period?
+- At what price did most of the trades happen during a period?
 - At what price there were almost no activity?
 - Were there many trades with small amounts or less trades with big amounts?
 - etc.
@@ -137,10 +137,12 @@ It provides you with:
 - Ability to train agent on different assets simultaneously.
   In this case the reward agent receives when trading different assets highly depends on their price.
   For example: `BTCUSD` price can move $4000 per day, while for `ETHUSD` it has range of about $100 per day.
-  Hence the rewards based on balance will differ 10 times!
-  To solve this problem you can automatically divide money balance with computed
+  Hence the rewards based on balance will differ more than 10 times,
+  making rewards from `BTCUSD` more valuable than those of `ETHUSD`, which is wrong!
+  To solve this problem you can automatically divide balance reward with computed
   [**ATR**](https://en.wikipedia.org/wiki/Average_true_range) value.
-  Thus making it possible to train agent on different assets with different prices simultaneously.
+  Thus making rewards from different assets to be in the same range.
+  So it would be possible to train agent on different assets with different prices simultaneously.
 - Support for many popular features and indicators:
   - ADL
   - CMF

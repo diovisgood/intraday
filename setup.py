@@ -19,7 +19,7 @@ setuptools.setup(
         'License :: Creative Commons',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.7',
     install_requires=[
         'gym>=0.17.2',
         'numpy>=1.18.1',
